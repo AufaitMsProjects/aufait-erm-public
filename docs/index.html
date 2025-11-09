@@ -1,0 +1,725 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>AUFAIT ERM – Support & Documentation (Complete Setup Guide)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;max-width:1000px;margin:40px auto;padding:0 16px;line-height:1.6;color:#111}
+    h1,h2{line-height:1.25} a{color:#0b62d6;text-decoration:none} a:hover{text-decoration:underline}
+    nav{background:#f5f7fb;border:1px solid #e6eaf2;border-radius:10px;padding:12px 16px;margin:14px 0}
+    code,pre{background:#f6f8fa;padding:2px 6px;border-radius:4px}
+    details{border:1px solid #e6eaf2;border-radius:10px;padding:10px 12px;margin:10px 0}
+    summary{font-weight:600;cursor:pointer}
+    table{border-collapse:collapse;width:100%}
+    th,td{border:1px solid #e6eaf2;padding:8px;text-align:left;vertical-align:top}
+    .badge{display:inline-block;background:#eef3ff;color:#1f3a93;border:1px solid #cfe0ff;border-radius:999px;padding:2px 8px;font-size:12px;margin-left:6px}
+    .muted{color:#666}
+  </style>
+</head>
+<body>
+  <h1>AUFAIT Enterprise Risk Management (ERM) – Support & Documentation</h1>
+  <p class="muted">Version 1.0 · Last Updated: October 2025</p>
+
+  <nav>
+    <a href="#quick-start">Quick Start</a> ·
+    <a href="#setup-guide">Setup Guide (Summary)</a> ·
+    <a href="#schema">SharePoint List Schemas (Core)</a> ·
+    <a href="#flows">Power Automate Flows</a> ·
+    <a href="#checklist">Verification Checklist</a> ·
+    <a href="#troubleshooting">Troubleshooting</a> ·
+    <a href="#complete">Complete Setup Guide (Full)</a> ·
+    <a href="#support">Contact Support</a>
+  </nav>
+
+  <!-- ——— Summary Sections (unchanged, for quick reading) ——— -->
+  <h2 id="quick-start">Quick Start</h2>
+  <ol>
+    <li>Install AUFAIT ERM from Microsoft AppSource.</li>
+    <li>Create all required SharePoint lists (names must match exactly).</li>
+    <li>Import and connect the five Power Automate flows.</li>
+    <li>Configure roles/permissions and branding.</li>
+    <li>Add the ERM web part to your page and test end-to-end.</li>
+  </ol>
+
+  <h2 id="setup-guide">Setup Guide (Summary)</h2>
+  <ul>
+    <li>SharePoint Online tenant & Site Owner permissions</li>
+    <li>No premium Power Automate connectors required</li>
+    <li>Microsoft 365 license with Power Automate capability</li>
+  </ul>
+  <p><strong>Package:</strong> SPFx web part (<em>aufait-erms-prod.sppkg</em>), 5 flows (JSON), user & setup guidance, and sample data templates.</p>
+
+  <h2 id="schema">SharePoint List Schemas (Core)</h2>
+  <p>Core examples (full set of 25 is included below under <a href="#complete">Complete Setup Guide (Full)</a>).</p>
+
+  <details open>
+    <summary>Risk Details <span class="badge">Core</span></summary>
+    <table>
+      <tr><th>Column</th><th>Type</th><th>Required</th><th>Description</th></tr>
+      <tr><td>Title</td><td>Single line of text</td><td>Yes</td><td>Risk title</td></tr>
+      <tr><td>RiskNumber</td><td>Single line of text</td><td>No</td><td>Auto-generated risk number</td></tr>
+      <tr><td>ProjectName</td><td>Single line of text</td><td>Yes</td><td>Associated project name</td></tr>
+      <tr><td>OrderType</td><td>Single line of text</td><td>Yes</td><td>Type of order</td></tr>
+      <tr><td>CreatorName</td><td>Person or Group</td><td>No</td><td>Risk creator</td></tr>
+      <tr><td>RiskType</td><td>Single line of text</td><td>Yes</td><td>Type of risk</td></tr>
+      <tr><td>RiskCategory</td><td>Single line of text</td><td>Yes</td><td>Risk category</td></tr>
+      <tr><td>RiskPhase</td><td>Single line of text</td><td>Yes</td><td>Current phase</td></tr>
+      <tr><td>RiskOwner</td><td>Person or Group</td><td>Yes</td><td>Primary risk owner</td></tr>
+      <tr><td>RiskIdentifierDepartment</td><td>Single line of text</td><td>No</td><td>Identifier's department</td></tr>
+      <tr><td>RiskOwnerDepartment</td><td>Single line of text</td><td>No</td><td>Owner's department</td></tr>
+      <tr><td>RiskActivityDescription</td><td>Multiple lines of text</td><td>Yes</td><td>Activity description</td></tr>
+      <tr><td>RiskDescription</td><td>Multiple lines of text</td><td>Yes</td><td>Detailed risk description</td></tr>
+      <tr><td>RiskCauses</td><td>Multiple lines of text</td><td>Yes</td><td>Root causes</td></tr>
+      <tr><td>RiskConsequences</td><td>Multiple lines of text</td><td>Yes</td><td>Potential consequences</td></tr>
+      <tr><td>RiskControlAction</td><td>Single line of text</td><td>Yes</td><td>Control action taken</td></tr>
+      <tr><td>CostImpact</td><td>Yes/No</td><td>Yes</td><td>Cost impact flag</td></tr>
+      <tr><td>ExpectedAmount</td><td>Number</td><td>No</td><td>Expected financial impact</td></tr>
+      <tr><td>InherentLikelihood</td><td>Number</td><td>Yes</td><td>Likelihood (1–5)</td></tr>
+      <tr><td>QualityImpact</td><td>Yes/No</td><td>Yes</td><td>Quality impact flag</td></tr>
+      <tr><td>InherentImpact</td><td>Number</td><td>Yes</td><td>Impact (1–5)</td></tr>
+      <tr><td>FinalInherentScore</td><td>Number</td><td>No</td><td>Calculated inherent score</td></tr>
+      <tr><td>InherentRiskRatingQualitative</td><td>Single line of text</td><td>No</td><td>Qualitative rating</td></tr>
+      <tr><td>Status</td><td>Single line of text</td><td>No</td><td>Current status</td></tr>
+      <tr><td>RiskClosureDate</td><td>Single line of text</td><td>No</td><td>Closure date</td></tr>
+      <tr><td>RiskClosureRemarks</td><td>Multiple lines of text</td><td>No</td><td>Closure remarks</td></tr>
+      <tr><td>TerminationDate</td><td>Single line of text</td><td>No</td><td>Termination date</td></tr>
+      <tr><td>TerminationRemarks</td><td>Multiple lines of text</td><td>No</td><td>Termination remarks</td></tr>
+      <tr><td>RiskIdentifier</td><td>Person or Group</td><td>No</td><td>Risk identifier</td></tr>
+      <tr><td>InherentRiskAgainst</td><td>Single line of text</td><td>Yes</td><td>Risk assessment criteria</td></tr>
+      <tr><td>RiskCreationDate</td><td>Single line of text</td><td>No</td><td>Date when created</td></tr>
+      <tr><td>ResidualImpact</td><td>Number</td><td>No</td><td>Residual impact score</td></tr>
+      <tr><td>ResidualLikelihood</td><td>Number</td><td>No</td><td>Residual likelihood score</td></tr>
+      <tr><td>FinalResidualScore</td><td>Number</td><td>No</td><td>Final residual score</td></tr>
+      <tr><td>ResidualRiskRatingQualitative</td><td>Single line of text</td><td>No</td><td>Residual qualitative rating</td></tr>
+      <tr><td>ResidualRiskAgainst</td><td>Single line of text</td><td>No</td><td>Residual assessment criteria</td></tr>
+    </table>
+  </details>
+
+  <details>
+    <summary>Inherent Risk Rating</summary>
+    <table>
+      <tr><th>Column</th><th>Type</th><th>Required</th><th>Description</th></tr>
+      <tr><td>Title</td><td>Single line of text</td><td>Yes</td><td>Rating title</td></tr>
+      <tr><td>RiskNumber</td><td>Single line of text</td><td>Yes</td><td>Risk number</td></tr>
+      <tr><td>RiskID</td><td>Single line of text</td><td>Yes</td><td>Reference to Risk Details</td></tr>
+      <tr><td>Date</td><td>Single line</td><td>Yes</td><td>Assessment date</td></tr>
+      <tr><td>Quarter</td><td>Single line</td><td>No</td><td>Q1–Q4</td></tr>
+      <tr><td>Year</td><td>Number</td><td>No</td><td>Assessment year</td></tr>
+      <tr><td>InherentRiskAgainst</td><td>Single line</td><td>Yes</td><td>Criteria</td></tr>
+      <tr><td>InherentLikelihood</td><td>Number</td><td>Yes</td><td>Likelihood</td></tr>
+      <tr><td>InherentImpact</td><td>Number</td><td>Yes</td><td>Impact</td></tr>
+      <tr><td>FinalInherentScore</td><td>Number</td><td>Yes</td><td>Calculated score</td></tr>
+      <tr><td>InherentRiskRatingQualitative</td><td>Single line</td><td>Yes</td><td>Qualitative rating</td></tr>
+      <tr><td>VersionNo</td><td>Number</td><td>No</td><td>Version</td></tr>
+      <tr><td>InherentCreated</td><td>Yes/No</td><td>Yes</td><td>Flag</td></tr>
+    </table>
+  </details>
+
+  <details>
+    <summary>Residual Risk Rating</summary>
+    <table>
+      <tr><th>Column</th><th>Type</th><th>Required</th><th>Description</th></tr>
+      <tr><td>Title</td><td>Single line of text</td><td>Yes</td><td>Rating title</td></tr>
+      <tr><td>RiskID</td><td>Single line</td><td>Yes</td><td>Reference to Risk Details</td></tr>
+      <tr><td>RiskNumber</td><td>Single line</td><td>Yes</td><td>Risk number</td></tr>
+      <tr><td>Date</td><td>Single line</td><td>Yes</td><td>Assessment date</td></tr>
+      <tr><td>Quater</td><td>Single line</td><td>No</td><td><strong>Note:</strong> intentionally spelled “Quater”</td></tr>
+      <tr><td>Year</td><td>Number</td><td>No</td><td>Assessment year</td></tr>
+      <tr><td>ResidualRiskAgainst</td><td>Single line</td><td>No</td><td>Criteria</td></tr>
+      <tr><td>ResidualImpact</td><td>Number</td><td>Yes</td><td>Residual impact score</td></tr>
+      <tr><td>ResidualRiskRating</td><td>Number</td><td>No</td><td>Additional rating</td></tr>
+      <tr><td>ResidualRiskRatingQualitative</td><td>Single line</td><td>Yes</td><td>Qualitative rating</td></tr>
+      <tr><td>VersionNo</td><td>Number</td><td>No</td><td>Version</td></tr>
+      <tr><td>ResidualLikelihood</td><td>Number</td><td>Yes</td><td>Residual likelihood score</td></tr>
+      <tr><td>FinalResidualScore</td><td>Number</td><td>Yes</td><td>Final residual score</td></tr>
+      <tr><td>ResidualCreated</td><td>Yes/No</td><td>Yes</td><td>Flag</td></tr>
+    </table>
+  </details>
+
+  <!-- ——— Flows Summary ——— -->
+  <h2 id="flows">Power Automate Flows (Summary)</h2>
+  <ol>
+    <li><strong>Mitigation Plan WF</strong> – Writes change history to “Mitigation Plan Histories”.</li>
+    <li><strong>Contingency Plan WF</strong> – Writes change history to “Contingency Plan Histories”.</li>
+    <li><strong>Update Inherent Risk WF</strong> – Updates Risk Details; recalculates inherent score.</li>
+    <li><strong>Update Residual Risk WF</strong> – Updates Risk Details; recalculates residual score.</li>
+    <li><strong>TTL – Risk Initiation WF</strong> – Approvals, notifications, reminders, escalations, weekly reports.</li>
+  </ol>
+  <p><strong>Import:</strong> Power Automate → My flows → Import (Legacy) → Upload JSON → Map SharePoint/Email connections → Turn on.</p>
+
+  <h2 id="checklist">Verification Checklist (Summary)</h2>
+  <ul>
+    <li>25 lists created correctly; master data populated</li>
+    <li>CompanyCustomization has one active record (branding)</li>
+    <li>All flows imported, connected, and enabled</li>
+    <li>Notifications/emails working; histories recorded</li>
+    <li>Permissions validated by role; web part added</li>
+  </ul>
+
+  <h2 id="troubleshooting">Troubleshooting (Summary)</h2>
+  <ul>
+    <li><strong>List not found:</strong> Check exact names/site URL</li>
+    <li><strong>Permissions:</strong> Ensure Contribute on lists</li>
+    <li><strong>Flow failures:</strong> Re-authenticate connectors</li>
+    <li><strong>Branding missing:</strong> Confirm active CompanyCustomization</li>
+  </ul>
+
+  <!-- ——— COMPLETE SETUP GUIDE (FULL) ——— -->
+  <h2 id="complete">Complete Setup Guide (Full)</h2>
+  <p>Everything below is the full, detailed guide (no external PDFs required).</p>
+
+  <h3>Prerequisites</h3>
+  <ul>
+    <li>SharePoint Online tenant with appropriate permissions</li>
+    <li>Target Site Collection for ERM deployment</li>
+    <li>Site Owner or Site Collection Administrator permissions</li>
+    <li>Power Automate access (no premium flows required)</li>
+    <li>Microsoft 365 license with Power Automate capabilities</li>
+  </ul>
+
+  <h3>Solution Package Contents</h3>
+  <ul>
+    <li><strong>SPFx Web Part</strong>
+      <ul>
+        <li><em>aufait-erms-prod.sppkg</em> – SharePoint Framework package</li>
+        <li>Web Part Manifest – configuration and permissions</li>
+        <li>Source – TypeScript/React implementation</li>
+      </ul>
+    </li>
+    <li><strong>Power Automate Flows (5)</strong>
+      <ul>
+        <li>Mitigation Plan WF.json – Mitigation plan history tracking</li>
+        <li>Contingency Plan WF.json – Contingency plan history tracking</li>
+        <li>Update Inherent Risk WF.json – Inherent risk updates</li>
+        <li>Update Residual Risk WF.json – Residual risk updates</li>
+        <li>TTL - Risk Initiation WF.json – Approvals, notifications, reminders</li>
+      </ul>
+    </li>
+    <li><strong>Documentation</strong>
+      <ul>
+        <li>AUFAIT_ERM_SETUP_GUIDE (this content)</li>
+        <li>AUFAIT_ERM_USER_GUIDE</li>
+      </ul>
+    </li>
+    <li><strong>Sample Data</strong>
+      <ul>
+        <li>Master_Data_Templates.xlsx</li>
+        <li>Sample_Risk_Scenarios.xlsx</li>
+        <li>User_Role_Configuration.xlsx</li>
+      </ul>
+    </li>
+  </ul>
+
+  <h3>Quick Start</h3>
+  <ol>
+    <li>Install the app from Microsoft AppSource.</li>
+    <li>Create required lists (see all 25 below; names must match exactly).</li>
+    <li>Import and configure the five Power Automate flows.</li>
+    <li>Configure permissions and roles.</li>
+    <li>Add the ERM web part to your desired page.</li>
+    <li>Test the system end-to-end.</li>
+  </ol>
+
+  <h3>All Required SharePoint Lists & Libraries (25)</h3>
+
+  <details open>
+    <summary><strong>Core Risk Management Lists</strong></summary>
+
+    <!-- 1 Risk Details -->
+    <h4>1) Risk Details (Custom List)</h4>
+    <table>
+      <tr><th>Column Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
+      <tr><td>Title</td><td>Single line of text</td><td>Yes</td><td>Risk title</td></tr>
+      <tr><td>RiskNumber</td><td>Single line of text</td><td>No</td><td>Auto-generated risk number</td></tr>
+      <tr><td>ProjectName</td><td>Single line of text</td><td>Yes</td><td>Associated project name</td></tr>
+      <tr><td>OrderType</td><td>Single line of text</td><td>Yes</td><td>Type of order</td></tr>
+      <tr><td>CreatorName</td><td>Person or Group</td><td>No</td><td>Risk creator</td></tr>
+      <tr><td>RiskType</td><td>Single line of text</td><td>Yes</td><td>Type of risk</td></tr>
+      <tr><td>RiskCategory</td><td>Single line of text</td><td>Yes</td><td>Risk category</td></tr>
+      <tr><td>RiskPhase</td><td>Single line of text</td><td>Yes</td><td>Current phase</td></tr>
+      <tr><td>RiskOwner</td><td>Person or Group</td><td>Yes</td><td>Primary risk owner</td></tr>
+      <tr><td>RiskIdentifierDepartment</td><td>Single line of text</td><td>No</td><td>Identifier's department</td></tr>
+      <tr><td>RiskOwnerDepartment</td><td>Single line of text</td><td>No</td><td>Owner's department</td></tr>
+      <tr><td>RiskActivityDescription</td><td>Multiple lines of text</td><td>Yes</td><td>Activity description</td></tr>
+      <tr><td>RiskDescription</td><td>Multiple lines of text</td><td>Yes</td><td>Detailed risk description</td></tr>
+      <tr><td>RiskCauses</td><td>Multiple lines of text</td><td>Yes</td><td>Root causes</td></tr>
+      <tr><td>RiskConsequences</td><td>Multiple lines of text</td><td>Yes</td><td>Potential consequences</td></tr>
+      <tr><td>RiskControlAction</td><td>Single line of text</td><td>Yes</td><td>Control action taken</td></tr>
+      <tr><td>CostImpact</td><td>Yes/No</td><td>Yes</td><td>Cost impact flag</td></tr>
+      <tr><td>ExpectedAmount</td><td>Number</td><td>No</td><td>Expected financial impact</td></tr>
+      <tr><td>InherentLikelihood</td><td>Number</td><td>Yes</td><td>Likelihood score (1–5)</td></tr>
+      <tr><td>QualityImpact</td><td>Yes/No</td><td>Yes</td><td>Quality impact flag</td></tr>
+      <tr><td>InherentImpact</td><td>Number</td><td>Yes</td><td>Impact score (1–5)</td></tr>
+      <tr><td>FinalInherentScore</td><td>Number</td><td>No</td><td>Calculated inherent score</td></tr>
+      <tr><td>InherentRiskRatingQualitative</td><td>Single line of text</td><td>No</td><td>Qualitative rating</td></tr>
+      <tr><td>Status</td><td>Single line of text</td><td>No</td><td>Current risk status</td></tr>
+      <tr><td>RiskClosureDate</td><td>Single line of text</td><td>No</td><td>Date when risk was closed</td></tr>
+      <tr><td>RiskClosureRemarks</td><td>Multiple lines of text</td><td>No</td><td>Closure remarks</td></tr>
+      <tr><td>TerminationDate</td><td>Single line of text</td><td>No</td><td>Termination date</td></tr>
+      <tr><td>TerminationRemarks</td><td>Multiple lines of text</td><td>No</td><td>Termination remarks</td></tr>
+      <tr><td>RiskIdentifier</td><td>Person or Group</td><td>No</td><td>Risk identifier</td></tr>
+      <tr><td>InherentRiskAgainst</td><td>Single line of text</td><td>Yes</td><td>Risk assessment criteria</td></tr>
+      <tr><td>RiskCreationDate</td><td>Single line of text</td><td>No</td><td>Date when created</td></tr>
+      <tr><td>ResidualImpact</td><td>Number</td><td>No</td><td>Residual impact score</td></tr>
+      <tr><td>ResidualLikelihood</td><td>Number</td><td>No</td><td>Residual likelihood score</td></tr>
+      <tr><td>FinalResidualScore</td><td>Number</td><td>No</td><td>Final residual score</td></tr>
+      <tr><td>ResidualRiskRatingQualitative</td><td>Single line of text</td><td>No</td><td>Residual qualitative rating</td></tr>
+      <tr><td>ResidualRiskAgainst</td><td>Single line of text</td><td>No</td><td>Residual assessment criteria</td></tr>
+    </table>
+
+    <!-- 2 Inherent Risk Rating -->
+    <h4>2) Inherent Risk Rating (Custom List)</h4>
+    <table>
+      <tr><th>Column Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
+      <tr><td>Title</td><td>Single line of text</td><td>Yes</td><td>Rating title</td></tr>
+      <tr><td>RiskNumber</td><td>Single line of text</td><td>Yes</td><td>Risk number</td></tr>
+      <tr><td>RiskID</td><td>Single line of text</td><td>Yes</td><td>Reference to Risk Details</td></tr>
+      <tr><td>Date</td><td>Single line of text</td><td>Yes</td><td>Assessment date</td></tr>
+      <tr><td>Quarter</td><td>Single line of text</td><td>No</td><td>Q1, Q2, Q3, Q4</td></tr>
+      <tr><td>Year</td><td>Number</td><td>No</td><td>Assessment year</td></tr>
+      <tr><td>InherentRiskAgainst</td><td>Single line of text</td><td>Yes</td><td>Assessment criteria</td></tr>
+      <tr><td>InherentLikelihood</td><td>Number</td><td>Yes</td><td>Likelihood score</td></tr>
+      <tr><td>InherentImpact</td><td>Number</td><td>Yes</td><td>Impact score</td></tr>
+      <tr><td>FinalInherentScore</td><td>Number</td><td>Yes</td><td>Calculated score</td></tr>
+      <tr><td>InherentRiskRatingQualitative</td><td>Single line of text</td><td>Yes</td><td>Qualitative rating</td></tr>
+      <tr><td>VersionNo</td><td>Number</td><td>No</td><td>Version number</td></tr>
+      <tr><td>InherentCreated</td><td>Yes/No</td><td>Yes</td><td>Created flag</td></tr>
+    </table>
+
+    <!-- 3 Residual Risk Rating -->
+    <h4>3) Residual Risk Rating (Custom List)</h4>
+    <table>
+      <tr><th>Column Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
+      <tr><td>Title</td><td>Single line of text</td><td>Yes</td><td>Rating title</td></tr>
+      <tr><td>RiskID</td><td>Single line of text</td><td>Yes</td><td>Reference to Risk Details</td></tr>
+      <tr><td>RiskNumber</td><td>Single line of text</td><td>Yes</td><td>Risk number</td></tr>
+      <tr><td>Date</td><td>Single line of text</td><td>Yes</td><td>Assessment date</td></tr>
+      <tr><td>Quater</td><td>Single line of text</td><td>No</td><td><strong>Note:</strong> intentionally spelled "Quater"</td></tr>
+      <tr><td>Year</td><td>Number</td><td>No</td><td>Assessment year</td></tr>
+      <tr><td>ResidualRiskAgainst</td><td>Single line of text</td><td>No</td><td>Assessment criteria</td></tr>
+      <tr><td>ResidualImpact</td><td>Number</td><td>Yes</td><td>Residual impact score</td></tr>
+      <tr><td>ResidualRiskRating</td><td>Number</td><td>No</td><td>Additional rating field</td></tr>
+      <tr><td>ResidualRiskRatingQualitative</td><td>Single line of text</td><td>Yes</td><td>Qualitative rating</td></tr>
+      <tr><td>VersionNo</td><td>Number</td><td>No</td><td>Version number</td></tr>
+      <tr><td>ResidualLikelihood</td><td>Number</td><td>Yes</td><td>Residual likelihood score</td></tr>
+      <tr><td>FinalResidualScore</td><td>Number</td><td>Yes</td><td>Final residual score</td></tr>
+      <tr><td>ResidualCreated</td><td>Yes/No</td><td>Yes</td><td>Created flag</td></tr>
+    </table>
+
+    <!-- 4 M_RiskOwners -->
+    <h4>4) M_RiskOwners (Custom List)</h4>
+    <table>
+      <tr><th>Column Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
+      <tr><td>Title</td><td>Single line of text</td><td>Yes</td><td>Owner record title</td></tr>
+      <tr><td>To</td><td>Person or Group</td><td>Yes</td><td>Primary risk owner</td></tr>
+      <tr><td>Cc</td><td>Person or Group</td><td>No</td><td>Additional stakeholders (multiple selection)</td></tr>
+      <tr><td>RiskId</td><td>Single line of text</td><td>Yes</td><td>Reference to Risk Details</td></tr>
+    </table>
+
+    <!-- 5 ApprovalLog -->
+    <h4>5) ApprovalLog (Custom List)</h4>
+    <table>
+      <tr><th>Column Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
+      <tr><td>Title</td><td>Single line of text</td><td>Yes</td><td>Log entry title</td></tr>
+      <tr><td>RiskNumber</td><td>Single line of text</td><td>Yes</td><td>Risk number</td></tr>
+      <tr><td>StepName</td><td>Single line of text</td><td>Yes</td><td>Workflow step name</td></tr>
+      <tr><td>CreateOn</td><td>Single line of text</td><td>Yes</td><td>Creation date</td></tr>
+      <tr><td>Assignee</td><td>Person or Group</td><td>Yes</td><td>Person assigned</td></tr>
+      <tr><td>Status</td><td>Single line of text</td><td>Yes</td><td>Current status</td></tr>
+      <tr><td>Action</td><td>Single line of text</td><td>Yes</td><td>Action taken</td></tr>
+      <tr><td>CompletionDate</td><td>Single line of text</td><td>No</td><td>Completion date</td></tr>
+      <tr><td>Comments</td><td>Multiple lines of text</td><td>No</td><td>Comments</td></tr>
+      <tr><td>TO</td><td>Person or Group</td><td>No</td><td>To user</td></tr>
+      <tr><td>CC</td><td>Person or Group</td><td>No</td><td>CC user</td></tr>
+      <tr><td>RiskID</td><td>Single line of text</td><td>Yes</td><td>Reference to Risk Details</td></tr>
+    </table>
+  </details>
+
+  <details>
+    <summary><strong>Mitigation & Contingency</strong></summary>
+
+    <!-- 6 Mitigation Plan -->
+    <h4>6) Mitigation Plan (Custom List)</h4>
+    <table>
+      <tr><th>Column Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
+      <tr><td>Title</td><td>Single line of text</td><td>Yes</td><td>Plan title</td></tr>
+      <tr><td>RiskID</td><td>Single line of text</td><td>Yes</td><td>Reference to Risk Details</td></tr>
+      <tr><td>RiskNumber</td><td>Single line of text</td><td>Yes</td><td>Risk number</td></tr>
+      <tr><td>ProposedMitigationPlan</td><td>Multiple lines of text</td><td>Yes</td><td>Mitigation plan details</td></tr>
+      <tr><td>ProposedDateOfMitigation</td><td>Single line of text</td><td>Yes</td><td>Proposed start date</td></tr>
+      <tr><td>TargetDate</td><td>Single line of text</td><td>Yes</td><td>Target completion date</td></tr>
+      <tr><td>PlanCreatedBy</td><td>Person or Group</td><td>Yes</td><td>Plan creator</td></tr>
+      <tr><td>PlanCreatedOn</td><td>Single line of text</td><td>Yes</td><td>Creation date</td></tr>
+      <tr><td>CurrentStatusOfMitigationPlan</td><td>Multiple lines of text</td><td>Yes</td><td>Current status</td></tr>
+      <tr><td>RevisedDateOfMitigation</td><td>Single line of text</td><td>No</td><td>Revised date</td></tr>
+      <tr><td>UpdatedOn</td><td>Single line of text</td><td>No</td><td>Last update date</td></tr>
+      <tr><td>PlanUpdatedBy</td><td>Person or Group</td><td>No</td><td>Last updated by</td></tr>
+      <tr><td>VersionNo</td><td>Number</td><td>No</td><td>Version number</td></tr>
+    </table>
+
+    <!-- 7 Contingency Plan -->
+    <h4>7) Contingency Plan (Custom List)</h4>
+    <table>
+      <tr><th>Column Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
+      <tr><td>Title</td><td>Single line of text</td><td>Yes</td><td>Plan title</td></tr>
+      <tr><td>RiskID</td><td>Single line of text</td><td>Yes</td><td>Reference to Risk Details</td></tr>
+      <tr><td>RiskNumber</td><td>Single line of text</td><td>Yes</td><td>Risk number</td></tr>
+      <tr><td>ProposedMitigationPlan</td><td>Multiple lines of text</td><td>Yes</td><td>Contingency plan details</td></tr>
+      <tr><td>ProposedDateOfMitigation</td><td>Single line of text</td><td>Yes</td><td>Proposed start date</td></tr>
+      <tr><td>TargetDate</td><td>Single line of text</td><td>Yes</td><td>Target completion date</td></tr>
+      <tr><td>PlanCreatedBy</td><td>Person or Group</td><td>Yes</td><td>Plan creator</td></tr>
+      <tr><td>PlanCreatedOn</td><td>Single line of text</td><td>Yes</td><td>Creation date</td></tr>
+      <tr><td>CurrentStatusOfMitigationPlan</td><td>Multiple lines of text</td><td>Yes</td><td>Current status</td></tr>
+      <tr><td>RevisedDateOfMitigation</td><td>Single line of text</td><td>No</td><td>Revised date</td></tr>
+      <tr><td>UpdatedOn</td><td>Single line of text</td><td>No</td><td>Last update date</td></tr>
+      <tr><td>PlanUpdatedBy</td><td>Person or Group</td><td>No</td><td>Last updated by</td></tr>
+      <tr><td>VersionNo</td><td>Number</td><td>No</td><td>Version number</td></tr>
+    </table>
+
+    <!-- 8 Mitigation Plan Histories -->
+    <h4>8) Mitigation Plan Histories (Custom List)</h4>
+    <table>
+      <tr><th>Column Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
+      <tr><td>Title</td><td>Single line of text</td><td>Yes</td><td>History entry title</td></tr>
+      <tr><td>RiskID</td><td>Single line of text</td><td>Yes</td><td>Reference to Risk Details</td></tr>
+      <tr><td>RiskNumber</td><td>Single line of text</td><td>Yes</td><td>Risk number</td></tr>
+      <tr><td>ProposedMitigationPlan</td><td>Multiple lines of text</td><td>Yes</td><td>Mitigation plan details</td></tr>
+      <tr><td>ProposedDateOfMitigation</td><td>Single line of text</td><td>Yes</td><td>Proposed start date</td></tr>
+      <tr><td>TargetDate</td><td>Single line of text</td><td>Yes</td><td>Target completion date</td></tr>
+      <tr><td>PlanCreatedBy</td><td>Person or Group</td><td>Yes</td><td>Plan creator</td></tr>
+      <tr><td>PlanCreatedOn</td><td>Single line of text</td><td>Yes</td><td>Creation date</td></tr>
+      <tr><td>CurrentStatusOfMitigationPlan</td><td>Multiple lines of text</td><td>Yes</td><td>Current status</td></tr>
+      <tr><td>RevisedDateOfMitigation</td><td>Single line of text</td><td>No</td><td>Revised date</td></tr>
+      <tr><td>UpdatedOn</td><td>Single line of text</td><td>No</td><td>Last update date</td></tr>
+      <tr><td>PlanUpdatedBy</td><td>Person or Group</td><td>No</td><td>Last updated by</td></tr>
+      <tr><td>VersionNo</td><td>Number</td><td>No</td><td>Version number</td></tr>
+      <tr><td>Mitigation Plan Id</td><td>Single line of text</td><td>Yes</td><td>Reference to Mitigation Plan</td></tr>
+    </table>
+
+    <!-- 9 Contingency Plan Histories -->
+    <h4>9) Contingency Plan Histories (Custom List)</h4>
+    <table>
+      <tr><th>Column Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
+      <tr><td>Title</td><td>Single line of text</td><td>Yes</td><td>History entry title</td></tr>
+      <tr><td>RiskID</td><td>Single line of text</td><td>Yes</td><td>Reference to Risk Details</td></tr>
+      <tr><td>RiskNumber</td><td>Single line of text</td><td>Yes</td><td>Risk number</td></tr>
+      <tr><td>ProposedMitigationPlan</td><td>Multiple lines of text</td><td>Yes</td><td>Contingency plan details</td></tr>
+      <tr><td>ProposedDateOfMitigation</td><td>Single line of text</td><td>Yes</td><td>Proposed start date</td></tr>
+      <tr><td>TargetDate</td><td>Single line of text</td><td>Yes</td><td>Target completion date</td></tr>
+      <tr><td>PlanCreatedBy</td><td>Person or Group</td><td>Yes</td><td>Plan creator</td></tr>
+      <tr><td>PlanCreatedOn</td><td>Single line of text</td><td>Yes</td><td>Creation date</td></tr>
+      <tr><td>CurrentStatusOfMitigationPlan</td><td>Multiple lines of text</td><td>Yes</td><td>Current status</td></tr>
+      <tr><td>RevisedDateOfMitigation</td><td>Single line of text</td><td>No</td><td>Revised date</td></tr>
+      <tr><td>UpdatedOn</td><td>Single line of text</td><td>No</td><td>Last update date</td></tr>
+      <tr><td>PlanUpdatedBy</td><td>Person or Group</td><td>No</td><td>Last updated by</td></tr>
+      <tr><td>VersionNo</td><td>Number</td><td>No</td><td>Version number</td></tr>
+      <tr><td>Contingency Plan Id</td><td>Single line of text</td><td>Yes</td><td>Reference to Contingency Plan</td></tr>
+    </table>
+  </details>
+
+  <details>
+    <summary><strong>Master Data Lists</strong></summary>
+
+    <!-- 10 Projects -->
+    <h4>10) Projects (Custom List)</h4>
+    <table>
+      <tr><th>Column Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
+      <tr><td>Title</td><td>Single line of text</td><td>Yes</td><td>Project name</td></tr>
+      <tr><td>IsActive</td><td>Yes/No</td><td>Yes</td><td>Whether project is active</td></tr>
+    </table>
+
+    <!-- 11 Order Type -->
+    <h4>11) Order Type (Custom List)</h4>
+    <table>
+      <tr><th>Column Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
+      <tr><td>Title</td><td>Single line of text</td><td>Yes</td><td>Order type name</td></tr>
+      <tr><td>IsActive</td><td>Yes/No</td><td>Yes</td><td>Whether order type is active</td></tr>
+    </table>
+
+    <!-- 12 Risk Category -->
+    <h4>12) Risk Category (Custom List)</h4>
+    <table>
+      <tr><th>Column Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
+      <tr><td>Title</td><td>Single line of text</td><td>Yes</td><td>Category name</td></tr>
+      <tr><td>IsActive</td><td>Yes/No</td><td>Yes</td><td>Whether category is active</td></tr>
+    </table>
+
+    <!-- 13 Risk Type -->
+    <h4>13) Risk Type (Custom List)</h4>
+    <table>
+      <tr><th>Column Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
+      <tr><td>Title</td><td>Single line of text</td><td>Yes</td><td>Risk type name</td></tr>
+      <tr><td>IsActive</td><td>Yes/No</td><td>Yes</td><td>Whether risk type is active</td></tr>
+    </table>
+
+    <!-- 14 Phase -->
+    <h4>14) Phase (Custom List)</h4>
+    <table>
+      <tr><th>Column Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
+      <tr><td>Title</td><td>Single line of text</td><td>Yes</td><td>Phase name</td></tr>
+      <tr><td>IsActive</td><td>Yes/No</td><td>Yes</td><td>Whether phase is active</td></tr>
+    </table>
+
+    <!-- 15 Risk Control Action -->
+    <h4>15) Risk Control Action (Custom List)</h4>
+    <table>
+      <tr><th>Column Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
+      <tr><td>Title</td><td>Single line of text</td><td>Yes</td><td>Action name</td></tr>
+    </table>
+
+    <!-- 16 Inherent Risk Against -->
+    <h4>16) Inherent Risk Against (Custom List)</h4>
+    <table>
+      <tr><th>Column Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
+      <tr><td>Title</td><td>Single line of text</td><td>Yes</td><td>Criteria name</td></tr>
+      <tr><td>Risk Against</td><td>Single line of text</td><td>No</td><td>Risk against description</td></tr>
+    </table>
+
+    <!-- 17 Residual Risk Against -->
+    <h4>17) Residual Risk Against (Custom List)</h4>
+    <table>
+      <tr><th>Column Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
+      <tr><td>Title</td><td>Single line of text</td><td>Yes</td><td>Criteria name</td></tr>
+      <tr><td>Risk Against</td><td>Single line of text</td><td>No</td><td>Risk against description</td></tr>
+    </table>
+
+    <!-- 18 M_RiskRating -->
+    <h4>18) M_RiskRating (Custom List)</h4>
+    <table>
+      <tr><th>Column Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
+      <tr><td>Title</td><td>Single line of text</td><td>Yes</td><td>Rating scale name</td></tr>
+      <tr><td>ScoreStart</td><td>Number</td><td>Yes</td><td>Start of score range</td></tr>
+      <tr><td>ScoreEnd</td><td>Number</td><td>Yes</td><td>End of score range</td></tr>
+      <tr><td>RiskRatingQualitative</td><td>Single line of text</td><td>Yes</td><td>Qualitative rating</td></tr>
+    </table>
+  </details>
+
+  <details>
+    <summary><strong>User Management</strong></summary>
+
+    <!-- 19 M_Admin_Users -->
+    <h4>19) M_Admin_Users (Custom List)</h4>
+    <table>
+      <tr><th>Column Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
+      <tr><td>Title</td><td>Single line of text</td><td>Yes</td><td>Admin record title</td></tr>
+      <tr><td>AdminRole</td><td>Choice</td><td>Yes</td><td>Admin role (e.g., "Administrator")</td></tr>
+      <tr><td>LastLogin</td><td>Date and Time</td><td>No</td><td>Last login timestamp</td></tr>
+      <tr><td>IsActive</td><td>Yes/No</td><td>Yes</td><td>Active flag</td></tr>
+      <tr><td>User</td><td>Person or Group</td><td>Yes</td><td>Administrator user</td></tr>
+      <tr><td>LastModified</td><td>Date and Time</td><td>No</td><td>Last modified timestamp</td></tr>
+    </table>
+
+    <!-- 20 M_ERMHead -->
+    <h4>20) M_ERMHead (Custom List)</h4>
+    <table>
+      <tr><th>Column Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
+      <tr><td>Title</td><td>Single line of text</td><td>Yes</td><td>ERM Head record title</td></tr>
+      <tr><td>ERMHead</td><td>Person or Group</td><td>Yes</td><td>ERM Head user</td></tr>
+    </table>
+
+    <!-- 21 M_ERMTeam -->
+    <h4>21) M_ERMTeam (Custom List)</h4>
+    <table>
+      <tr><th>Column Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
+      <tr><td>Title</td><td>Single line of text</td><td>Yes</td><td>Team member record title</td></tr>
+      <tr><td>ERMTeam</td><td>Person or Group</td><td>Yes</td><td>ERM Team member</td></tr>
+    </table>
+
+    <!-- 22 M_Roles -->
+    <h4>22) M_Roles (Custom List)</h4>
+    <table>
+      <tr><th>Column Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
+      <tr><td>Title</td><td>Single line of text</td><td>Yes</td><td>Role title</td></tr>
+      <tr><td>RoleName</td><td>Single line of text</td><td>Yes</td><td>Role name (e.g., "ERM Head", "ERM Team", "Risk Owner")</td></tr>
+      <tr><td>CanEdit</td><td>Yes/No</td><td>Yes</td><td>Can edit risks</td></tr>
+      <tr><td>CanDelete</td><td>Yes/No</td><td>Yes</td><td>Can delete risks</td></tr>
+      <tr><td>CanCreate</td><td>Yes/No</td><td>Yes</td><td>Can create risks</td></tr>
+      <tr><td>CanView</td><td>Yes/No</td><td>Yes</td><td>Can view risks</td></tr>
+      <tr><td>CanApprove</td><td>Yes/No</td><td>Yes</td><td>Can approve risks</td></tr>
+      <tr><td>CanExport</td><td>Yes/No</td><td>Yes</td><td>Can export data</td></tr>
+      <tr><td>IsActive</td><td>Yes/No</td><td>Yes</td><td>Whether role is active</td></tr>
+      <tr><td>CanViewReport</td><td>Yes/No</td><td>Yes</td><td>Can view reports</td></tr>
+    </table>
+  </details>
+
+  <details>
+    <summary><strong>Configuration & Customization</strong></summary>
+
+    <!-- 23 CompanyCustomization -->
+    <h4>23) CompanyCustomization (Custom List)</h4>
+    <table>
+      <tr><th>Column Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
+      <tr><td>Title</td><td>Single line of text</td><td>Yes</td><td>Record title (e.g., "Default Configuration")</td></tr>
+      <tr><td>CompanyName</td><td>Single line of text</td><td>Yes</td><td>Full company name</td></tr>
+      <tr><td>CompanyCode</td><td>Single line of text</td><td>Yes</td><td>Company code/abbreviation</td></tr>
+      <tr><td>LogoUrl</td><td>Single line of text</td><td>No</td><td>URL to company logo image</td></tr>
+      <tr><td>PrimaryColor</td><td>Single line of text</td><td>No</td><td>Primary brand color (e.g., #003087)</td></tr>
+      <tr><td>SecondaryColor</td><td>Single line of text</td><td>No</td><td>Secondary brand color</td></tr>
+      <tr><td>AccentColor</td><td>Single line of text</td><td>No</td><td>Accent color</td></tr>
+      <tr><td>ApplicationName</td><td>Single line of text</td><td>Yes</td><td>e.g., "AUFAIT Enterprise Risk Management"</td></tr>
+      <tr><td>ApplicationShortName</td><td>Single line of text</td><td>Yes</td><td>e.g., "AUFAIT ERM"</td></tr>
+      <tr><td>EmailTemplate</td><td>Multiple lines of text</td><td>No</td><td>Default HTML email template with placeholders</td></tr>
+      <tr><td>CustomCSS</td><td>Multiple lines of text</td><td>No</td><td>Custom CSS overrides</td></tr>
+      <tr><td>IsActive</td><td>Yes/No</td><td>Yes</td><td>Active configuration flag</td></tr>
+    </table>
+  </details>
+
+  <details>
+    <summary><strong>Document Libraries</strong></summary>
+
+    <!-- 24 Risk Attachments -->
+    <h4>24) Risk Attachments (Document Library)</h4>
+    <table>
+      <tr><th>Column Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
+      <tr><td>Title</td><td>Single line of text</td><td>No</td><td>Document title</td></tr>
+      <tr><td>Description</td><td>Multiple lines of text</td><td>No</td><td>Document description</td></tr>
+      <tr><td>File Title</td><td>Single line of text</td><td>No</td><td>Custom file title</td></tr>
+      <tr><td>RiskId</td><td>Number</td><td>Yes</td><td>Reference to Risk Details</td></tr>
+    </table>
+
+    <!-- 25 Reference Documents -->
+    <h4>25) Reference Documents (Document Library)</h4>
+    <p>No custom columns required.</p>
+  </details>
+
+  <h3>Configuration Steps (Detailed)</h3>
+  <h4>Step 1: Create All Lists</h4>
+  <ol>
+    <li>Go to <em>Settings → Site Contents → New → App</em>.</li>
+    <li>Create each list/library using the schemas above.</li>
+    <li>Ensure all column names/types match exactly.</li>
+  </ol>
+
+  <h4>Step 2: Set Up Master Data</h4>
+  <ul>
+    <li>Populate <em>Projects, Risk Category, Risk Type, Phase, Risk Control Action</em>.</li>
+    <li>Create one active record in <strong>CompanyCustomization</strong> for branding.</li>
+  </ul>
+
+  <h4>Step 3: Configure User Roles</h4>
+  <ul>
+    <li>Add admins to <strong>M_Admin_Users</strong>; ERM heads to <strong>M_ERMHead</strong>; team members to <strong>M_ERMTeam</strong>.</li>
+    <li>Configure permissions in <strong>M_Roles</strong> for each role (View/Create/Edit/Delete/Approve/Export/Reports).</li>
+  </ul>
+
+  <h4>Step 4: Set Up Permissions</h4>
+  <ul>
+    <li>Grant <em>Contribute</em> permissions to all ERM users across required lists.</li>
+    <li>Optionally use a SharePoint group for ERM users and assign permissions.</li>
+  </ul>
+
+  <h4>Step 5: Add the Web Part</h4>
+  <ol>
+    <li>Edit the page → click <strong>+</strong> → add <strong>AUFAIT ERM</strong> web part.</li>
+    <li>Configure settings and publish.</li>
+  </ol>
+
+  <h3>Power Automate Flows (Included)</h3>
+  <h4>Included Flow Files</h4>
+  <ol>
+    <li>Mitigation Plan WF.json</li>
+    <li>Contingency Plan WF.json</li>
+    <li>Update Inherent Risk WF.json</li>
+    <li>Update Residual Risk WF.json</li>
+    <li>TTL - Risk Initiation WF.json</li>
+  </ol>
+
+  <h4>Flow Setup Instructions</h4>
+  <ol>
+    <li><strong>Import Flows:</strong> Go to Power Automate → <em>My flows</em> → <em>Import</em> → <em>Import package (Legacy)</em> → upload JSON files → follow wizard.</li>
+    <li><strong>Configure Connections:</strong> Ensure SharePoint and Email connections are set to your tenant.</li>
+    <li><strong>Activate:</strong> Enable all flows and test with sample data.</li>
+  </ol>
+
+  <h4>Detailed Flow Descriptions</h4>
+  <p><strong>Mitigation Plan WF</strong> — Trigger: create/modify in “Mitigation Plan”; writes full history to “Mitigation Plan Histories”, including changes, timestamps, and user.</p>
+  <p><strong>Contingency Plan WF</strong> — Trigger: create/modify in “Contingency Plan”; writes full history to “Contingency Plan Histories”.</p>
+  <p><strong>Update Inherent Risk WF</strong> — Trigger: changes in “Inherent Risk Rating”; updates corresponding “Risk Details” record and recalculates inherent score.</p>
+  <p><strong>Update Residual Risk WF</strong> — Trigger: changes in “Residual Risk Rating”; updates “Risk Details” and recalculates residual score.</p>
+  <p><strong>TTL - Risk Initiation WF</strong> — Triggers include schedule (e.g., daily 9:00 AM) and item changes; sends creation/status/ownership notifications, plan reminders, escalations to ERM Head, weekly summary reports, and rating change notifications.</p>
+
+  <h4>Flow Configuration Settings</h4>
+  <ul>
+    <li><strong>Email Templates:</strong> Use branding from <em>CompanyCustomization</em>; include risk details and action links.</li>
+    <li><strong>Notification Rules:</strong> Immediate (critical), daily digest, weekly summary, escalation for overdue items.</li>
+    <li><strong>Data Validation:</strong> Required fields, data consistency, permissions, valid recipient emails.</li>
+  </ul>
+
+  <h4>Monitoring & Maintenance</h4>
+  <ul>
+    <li>Monitor success rates and set failure alerts.</li>
+    <li>Monthly: review logs, update templates, adjust rules, refresh connections if needed.</li>
+  </ul>
+
+  <h4>Troubleshooting Flows</h4>
+  <ul>
+    <li><strong>Connection Errors:</strong> Re-authenticate SharePoint and Email connectors.</li>
+    <li><strong>Permission Issues:</strong> Ensure flows have access to required lists/libraries.</li>
+    <li><strong>Email Delivery:</strong> Check spam/transport rules.</li>
+    <li><strong>Data Mapping:</strong> Verify field mappings between lists.</li>
+  </ul>
+
+  <h4>Required Permissions for Flows</h4>
+  <ul>
+    <li>SharePoint: Read/Write across ERM lists</li>
+    <li>Email: Send as configured</li>
+    <li>Power Automate: Standard (no premium connectors)</li>
+    <li>Scheduled trigger permission for reminders/reports</li>
+  </ul>
+
+  <h4>Performance Optimization</h4>
+  <ul>
+    <li>Batch processing where possible</li>
+    <li>Conditional branches to skip unnecessary actions</li>
+    <li>Error handling and retries</li>
+    <li>Concurrency control and appropriate timeouts</li>
+  </ul>
+
+  <h3>Verification Checklist (Detailed)</h3>
+  <h4>SharePoint Setup</h4>
+  <ul>
+    <li>All 25 lists created with correct columns and types</li>
+    <li>Master data populated (Projects, Risk Category, Risk Type, Phase, Control Action)</li>
+    <li>CompanyCustomization has one active record with branding and app names</li>
+    <li>User roles configured (M_Admin_Users, M_ERMHead, M_ERMTeam, M_Roles)</li>
+    <li>Permissions set (Contribute) for ERM users</li>
+    <li>ERM web part added to page</li>
+  </ul>
+
+  <h4>Power Automate Flows</h4>
+  <ul>
+    <li>All 5 flows imported successfully</li>
+    <li>SharePoint and Email connections valid</li>
+    <li>Flows enabled and running without errors</li>
+    <li>Notifications (creation/status/ownership) verified</li>
+    <li>History tracking flows writing correctly</li>
+    <li>Risk update flows recalculating scores</li>
+    <li>Reminders/escalations configured & tested</li>
+  </ul>
+
+  <h4>System Testing</h4>
+  <ul>
+    <li>Create a test risk and walk through full lifecycle</li>
+    <li>Verify role-based permissions and visibility</li>
+    <li>Trigger notifications and approvals</li>
+    <li>Modify plans to validate history entries</li>
+    <li>Transfer ownership and confirm alerts</li>
+    <li>Review weekly summary output</li>
+    <li>Confirm email templates render with CompanyCustomization data</li>
+  </ul>
+
+  <h3>General Troubleshooting (Detailed)</h3>
+  <ul>
+    <li><strong>“List not found”</strong> — ensure names match exactly, including capitalization.</li>
+    <li><strong>Permission errors</strong> — verify Contribute permissions on all lists/libraries.</li>
+    <li><strong>Person fields</strong> — ensure single/multiple selection configured as needed.</li>
+    <li><strong>Date formats</strong> — use standard SharePoint date formats.</li>
+    <li><strong>Branding not applied</strong> — verify one active CompanyCustomization record exists.</li>
+  </ul>
+
+  <h2 id="support">Contact Support</h2>
+  <p>Email: <a href="mailto:support@aufaittechnologies.com">support@aufaittechnologies.com</a></p>
+
+</body>
+</html>
