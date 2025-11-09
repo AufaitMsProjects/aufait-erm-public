@@ -31,7 +31,6 @@ It integrates seamlessly with **SharePoint Online**, **Power Automate**, and **P
 |------|--------------|------------|
 | **📄 Setup & Support Guide** | Full installation, configuration, and usage guide for AUFAIT ERM | [View Guide](https://AufaitMsProjects.github.io/aufait-erm-public/) |
 | **🔒 Privacy Policy** | AUFAIT ERM privacy and data-handling information | [View Policy](https://AufaitMsProjects.github.io/aufait-erm-public/privacy/) |
-| **📜 End User License Agreement (EULA)** | (Optional) Terms of use for AUFAIT ERM | [View EULA](https://AufaitMsProjects.github.io/aufait-erm-public/eula/) |
 | **⬇️ Solution Package (ZIP)** | Ready-to-deploy SharePoint Framework (SPFx) solution for AUFAIT ERM | [Download ZIP](https://github.com/AufaitMsProjects/aufait-erm-public/releases/download/v1.0.0/AUFAIT-ERM_v1.0.0.zip) |
 
 > ⚠️ **Note:** The ZIP download link is hosted via **GitHub Releases** and should always point to the latest stable version of AUFAIT ERM.
@@ -49,7 +48,7 @@ It integrates seamlessly with **SharePoint Online**, **Power Automate**, and **P
 All setup steps, flow imports, and SharePoint schema details are hosted in the `/docs` section and rendered via GitHub Pages.
 
 ### 🔐 3. Review Legal Links
-The **Privacy Policy** and **EULA** (if used) are accessible through permanent public URLs that can be referenced directly from your AppSource listing.
+The **Privacy Policy** is accessible through permanent public URLs that can be referenced directly from your AppSource listing.
 
 ---
 
@@ -77,3 +76,4 @@ This repository contains **public documentation and downloadable resources** for
 All solution code, workflows, and associated intellectual property remain the exclusive property of **AUFAIT Technologies Pvt. Ltd.**
 
 © 2025 AUFAIT Technologies Pvt. Ltd. All rights reserved.
+
